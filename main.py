@@ -19,7 +19,7 @@ BOT_COMMANDS = 'hello\n' \
                'close\n' \
                'exit\n' \
                'good bye\n' \
-               'add contact {name}(required) {phone}(required) {phone}(optional) X multiple\n' \
+               'add contact {name}(required) {phone}(required) {phone}(optional) X multiple bd:{birthday}(optional)\n' \
                'change phone {name}(r) {old phone}(r) {new phone}(r)\n' \
                'find contact by name {name}(r)\n' \
                'show all\n' \
@@ -57,8 +57,7 @@ OPERATORS = {
     'find birthday': handler_find_birthday
 }
 
-# add contact tim 1234567890
-# show all
+
 def main():
     print(f'use those commands:\n{BOT_COMMANDS}\n')
     while globals.is_listening:
