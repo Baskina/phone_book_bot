@@ -1,19 +1,9 @@
-import re
-from user_actions_handler import handler_delete, handler_greetings, handler_update, handler_add, \
-    handler_add_phone, handler_find_phone, handler_find_by_name, handler_remove_phone, handler_show_all, \
-    handler_bye, handler_find_birthday
+from user_actions_handler import get_handler
 import globals
-
-COMMANDS_RGX = 'hello|close|exit|good bye|' \
-               'add contact|' \
-               'change phone|' \
-               'find contact by name|' \
-               'show all|' \
-               'add extra phone|' \
-               'find phone|' \
-               'delete contact|' \
-               'remove phone|' \
-               'find birthday'
+from utils.parser import parser, COMMANDS_RGX
+from user_actions_handler import book
+import pickle
+from file_config import file
 
 BOT_COMMANDS = 'hello\n' \
                'close\n' \
@@ -26,36 +16,8 @@ BOT_COMMANDS = 'hello\n' \
                'add extra phone {name}(r) {new phone}(r)\n' \
                'find phone {name}(r) {phone}(r)\n' \
                'delete contact {name}(r)\n' \
-               'remove phone {name}(r) {phone}(r)'
-
-
-def parser(line):
-    data_array = list(filter(None, re.split(COMMANDS_RGX, line)))
-    command = re.search(COMMANDS_RGX, line)
-
-    data = data_array[0].strip().split(' ') if len(data_array) > 0 else None
-    return command.group(), data
-
-
-def get_handler(operator):
-    return OPERATORS[operator]
-
-
-OPERATORS = {
-    'hello': handler_greetings,
-    'close': handler_bye,
-    'exit': handler_bye,
-    'good bye': handler_bye,
-    'add contact': handler_add,
-    'add extra phone': handler_add_phone,
-    'change phone': handler_update,
-    'delete contact': handler_delete,
-    'find contact by name': handler_find_by_name,
-    'show all': handler_show_all,
-    'find phone': handler_find_phone,
-    'remove phone': handler_remove_phone,
-    'find birthday': handler_find_birthday
-}
+               'remove phone {name}(r) {phone}(r)\n' \
+               'find by key {key}(r)'
 
 
 def main():
@@ -68,6 +30,9 @@ def main():
                 handler = get_handler(command)
                 result = handler(data)
                 print(result)
+                with open(file, "wb") as fh:
+                    fh.write(pickle.dumps(book))
+
                 continue
             except AttributeError:
                 print(f'Please, type right command: {COMMANDS_RGX}')

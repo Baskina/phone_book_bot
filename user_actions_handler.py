@@ -3,8 +3,15 @@ from record import Record
 from error_handler import EmptyNameError, EmptyPhoneNumberError
 from contact_book import AddressBook
 import globals
+from file_config import file
+import pickle
 
-book = AddressBook()
+try:
+    with open(file, "rb") as fh:
+        unpacked = pickle.loads(fh.read())
+        book = unpacked
+except FileNotFoundError:
+    book = AddressBook()
 
 
 @input_error
@@ -61,9 +68,20 @@ def handler_add_phone(data):
 
 
 @input_error
+def handler_find_by_key(search_key):
+    contact_list = ''
+    for name, value in book.data.items():
+        phones = '; '.join(list(map(lambda x: x.value, value.phones)))
+        if name.find(search_key[0]) != -1 or phones.find(search_key[0]) != -1:
+            contact_list += 'Name: {} --- Phones: {}\n'.format(name, phones)
+    return contact_list
+
+
+@input_error
 def handler_show_all(*args):
     if not book:
         return 'No names in your phone book'
+
     contact_list = ''
     for index, book_contact_list in enumerate(book):
         print(f'Contacts per {index + 1} page')
@@ -99,3 +117,25 @@ def handler_greetings(*args):
 def handler_bye(*args):
     globals.is_listening = False
     return 'Good bye!'
+
+
+def get_handler(operator):
+    return OPERATORS[operator]
+
+
+OPERATORS = {
+    'hello': handler_greetings,
+    'close': handler_bye,
+    'exit': handler_bye,
+    'good bye': handler_bye,
+    'add contact': handler_add,
+    'add extra phone': handler_add_phone,
+    'change phone': handler_update,
+    'delete contact': handler_delete,
+    'find contact by name': handler_find_by_name,
+    'show all': handler_show_all,
+    'find phone': handler_find_phone,
+    'remove phone': handler_remove_phone,
+    'find birthday': handler_find_birthday,
+    'find by key': handler_find_by_key
+}

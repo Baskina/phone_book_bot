@@ -31,7 +31,7 @@ def input_error(handler):
         except EmptyNameError:
             return f'Name is required'
         except ShortNameError:
-            return f'Name should have at lest 3 characters'
+            return f'Name should have at least 3 characters'
         except WrongPhoneFormatError:
             return f'Phone should have 10 decimals'
         except PhoneNotExistError:
